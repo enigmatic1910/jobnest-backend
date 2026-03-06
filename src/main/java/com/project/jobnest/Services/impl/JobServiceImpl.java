@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -70,6 +71,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
+    @Scheduled(fixedRate = 1000)
     public void fetchExternalJobs() {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -80,12 +82,14 @@ public class JobServiceImpl implements JobService {
         List<ExternalJobDto> jobs = response.getBody().getData();
 
         for(ExternalJobDto externalJobDto : jobs){
-            Job job = new Job();
+            if(!jobRepo.existsByTitleAndCompany(externalJobDto.getTitle(), externalJobDto.getCompany_name())) {
+                Job job = new Job();
 
-            job.setTitle(externalJobDto.getTitle());
-            job.setCompany(externalJobDto.getCompany_name());
+                job.setTitle(externalJobDto.getTitle());
+                job.setCompany(externalJobDto.getCompany_name());
 
-            jobRepo.save(job);
+                jobRepo.save(job);
+            }
         }
     }
 }
