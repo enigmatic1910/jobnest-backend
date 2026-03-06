@@ -9,7 +9,9 @@ import com.project.jobnest.exception.JobNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -63,5 +65,16 @@ public class JobServiceImpl implements JobService {
             throw new JobNotFoundException("Job not Found" + id);
         }
         jobRepo.deleteById(id);
+    }
+
+    @Override
+    public String fetchExternalJobs() {
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://www.arbeitnow.com/api/job-board-api";
+
+        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+
+        return response.getBody();
     }
 }

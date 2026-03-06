@@ -14,4 +14,5 @@ public interface JobService {
     JobResponseDto getJobById(Long id);
     JobResponseDto createJob(JobRequestDto job);
     void deleteJob(Long id);
+    String fetchExternalJobs();
 }

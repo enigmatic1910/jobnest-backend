@@ -39,4 +39,9 @@ public class JobController {
         jobService.deleteJob(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/external")
+    ResponseEntity<String> getExternalJobs(){
+        return ResponseEntity.ok(jobService.fetchExternalJobs());
+    }
 }
