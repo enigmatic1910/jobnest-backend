@@ -1,5 +1,7 @@
 package com.project.jobnest.Services.impl;
 
+import com.project.jobnest.DTO.ExternalJobDto;
+import com.project.jobnest.DTO.ExternalJobResponseDto;
 import com.project.jobnest.DTO.JobRequestDto;
 import com.project.jobnest.DTO.JobResponseDto;
 import com.project.jobnest.Entity.Job;
@@ -68,13 +70,22 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    public String fetchExternalJobs() {
+    public void fetchExternalJobs() {
 
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://www.arbeitnow.com/api/job-board-api";
 
-        ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);
+        ResponseEntity<ExternalJobResponseDto> response = restTemplate.getForEntity(url, ExternalJobResponseDto.class);
 
-        return response.getBody();
+        List<ExternalJobDto> jobs = response.getBody().getData();
+
+        for(ExternalJobDto externalJobDto : jobs){
+            Job job = new Job();
+
+            job.setTitle(externalJobDto.getTitle());
+            job.setCompany(externalJobDto.getCompany_name());
+
+            jobRepo.save(job);
+        }
     }
 }

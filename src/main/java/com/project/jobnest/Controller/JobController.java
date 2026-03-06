@@ -1,5 +1,6 @@
 package com.project.jobnest.Controller;
 
+import com.project.jobnest.DTO.ExternalJobResponseDto;
 import com.project.jobnest.DTO.JobRequestDto;
 import com.project.jobnest.DTO.JobResponseDto;
 import com.project.jobnest.Entity.Job;
@@ -42,6 +43,7 @@ public class JobController {
 
     @GetMapping("/external")
     ResponseEntity<String> getExternalJobs(){
-        return ResponseEntity.ok(jobService.fetchExternalJobs());
+        jobService.fetchExternalJobs();
+        return ResponseEntity.ok("Jobs imported successfully");
     }
 }
