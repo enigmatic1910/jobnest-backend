@@ -46,4 +46,9 @@ public class JobController {
         jobService.fetchExternalJobs();
         return ResponseEntity.ok("Jobs imported successfully");
     }
+
+    @GetMapping("/search")
+    ResponseEntity<List<JobResponseDto>> searchJobs(@RequestParam String title){
+        return ResponseEntity.ok(jobService.searchJobs(title));
+    }
 }

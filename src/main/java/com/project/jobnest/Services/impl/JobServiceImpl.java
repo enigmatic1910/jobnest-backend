@@ -92,4 +92,17 @@ public class JobServiceImpl implements JobService {
             }
         }
     }
+
+    @Override
+    public List<JobResponseDto> searchJobs(String title) {
+        List<Job> jobs = jobRepo.findByTitleIgnoreCase(title);
+
+        return jobs.stream()
+                .map(job -> new JobResponseDto(
+                        job.getId(),
+                        job.getTitle(),
+                        job.getCompany()
+                ))
+                .toList();
+    }
 }
