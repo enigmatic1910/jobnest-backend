@@ -71,7 +71,7 @@ public class JobServiceImpl implements JobService {
     }
 
     @Override
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 3600000)
     public void fetchExternalJobs() {
 
         RestTemplate restTemplate = new RestTemplate();
