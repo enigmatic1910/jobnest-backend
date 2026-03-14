@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class JobController {
 
     private final JobService jobService;
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping
     ResponseEntity<Page<JobResponseDto>> getAllJobs(Pageable pageable){
         return ResponseEntity.ok(jobService.fetchJobs(pageable));
@@ -31,11 +33,14 @@ public class JobController {
         return ResponseEntity.ok(jobService.getJobById(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     ResponseEntity<JobResponseDto> createJob(@Valid @RequestBody JobRequestDto job){
         return ResponseEntity.ok(jobService.createJob(job));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{id}")
     ResponseEntity<Job> deleteJob(@PathVariable Long id){
         jobService.deleteJob(id);
         return ResponseEntity.noContent().build();

@@ -32,7 +32,9 @@ public class AuthServiceImpl implements AuthService {
 
         user.setRole("USER");
 
-        userRepository.save(user);
+        User saved = userRepository.save(user);
+        System.out.println("Saved userId: "+saved.getId());
+        System.out.println("Saved username: "+saved.getUsername());
 
 
     }
@@ -45,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
             throw new RuntimeException("Passwords don't match");
         }
 
-        String token = jwtService.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user);
 
         return new AuthResponseDto(token);
     }
