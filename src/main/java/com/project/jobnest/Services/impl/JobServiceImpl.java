@@ -7,6 +7,8 @@ import com.project.jobnest.DTO.JobResponseDto;
 import com.project.jobnest.Entity.Job;
 import com.project.jobnest.Repo.JobRepo;
 import com.project.jobnest.Services.JobService;
+import com.project.jobnest.enums.EmploymentType;
+import com.project.jobnest.enums.JobStatus;
 import com.project.jobnest.exception.JobNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -73,20 +75,30 @@ public class JobServiceImpl implements JobService {
     @Override
     @Scheduled(fixedRate = 3600000)
     public void fetchExternalJobs() {
-
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://www.arbeitnow.com/api/job-board-api";
 
-        ResponseEntity<ExternalJobResponseDto> response = restTemplate.getForEntity(url, ExternalJobResponseDto.class);
+        ResponseEntity<ExternalJobResponseDto> response =
+                restTemplate.getForEntity(url, ExternalJobResponseDto.class);
+
+        if (response.getBody() == null || response.getBody().getData() == null) {
+            return;
+        }
 
         List<ExternalJobDto> jobs = response.getBody().getData();
 
-        for(ExternalJobDto externalJobDto : jobs){
-            if(!jobRepo.existsByTitleAndCompany(externalJobDto.getTitle(), externalJobDto.getCompany_name())) {
+        for (ExternalJobDto externalJobDto : jobs) {
+            if (!jobRepo.existsByTitleAndCompany(externalJobDto.getTitle(), externalJobDto.getCompany_name())) {
                 Job job = new Job();
 
                 job.setTitle(externalJobDto.getTitle());
                 job.setCompany(externalJobDto.getCompany_name());
+                job.setCompanyId(1L);
+                job.setStatus(JobStatus.PUBLISHED);
+                job.setEmploymentType(EmploymentType.FULL_TIME);
+                job.setDescription("Imported from external source");
+                job.setLocation("Remote");
+                job.setSalary(0L);
 
                 jobRepo.save(job);
             }
